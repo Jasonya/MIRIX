@@ -31,12 +31,12 @@ import os
 import random
 import sys
 
-sys.path.insert(0, "/home/lj/code/MIRIX/evals")
+sys.path.insert(0, "$REPO_DIR/evals")
 
-RESULTS = ("/home/lj/code/MIRIX/evals/results/locomo/"
+RESULTS = ("$REPO_DIR/evals/results/locomo/"
            "clean_v724_qaonly/metrics.json")
 PREFIX = "clean-r1__"
-CONFIG = "/home/lj/code/MIRIX/evals/configs/0201c_v6.yaml"
+CONFIG = "$REPO_DIR/evals/configs/0201c_v6.yaml"
 
 
 def main() -> None:

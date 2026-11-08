@@ -29,9 +29,9 @@ import re
 import subprocess
 import sys
 
-sys.path.insert(0, "/home/lj/code/MIRIX/evals")
+sys.path.insert(0, "$REPO_DIR/evals")
 
-RUN = "/home/lj/code/MIRIX/evals/results/locomo/ab_graph_r1"
+RUN = "$REPO_DIR/evals/results/locomo/ab_graph_r1"
 PREFIX = "clean-r1__"
 STOP = set("the a an and or of to in on at for with from that this it is was were be been "
            "have has had do does did his her their about they them what when which who "
@@ -69,7 +69,7 @@ async def main() -> None:
     client = AsyncOpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
     lc = {x["sample_id"]: x for x in json.load(
-        open("/home/lj/code/MIRIX/evals/data/locomo10.json"))}
+        open("$REPO_DIR/evals/data/locomo10.json"))}
     src = {}
     for sid, x in lc.items():
         p = []
@@ -89,7 +89,7 @@ async def main() -> None:
                           "-d", "mirix_locomo_clean_r1", "-At", "-F", "\t", "-c", q],
                          capture_output=True, text=True,
                          env={**os.environ, "PGPASSWORD": "mirix"},
-                         cwd="/home/lj/MIRIX_eval").stdout
+                         cwd="$EVAL_DIR").stdout
     store = {p.split("\t")[0]: content(p.split("\t")[1])
              for p in out.splitlines() if len(p.split("\t")) >= 2}
 
@@ -167,7 +167,7 @@ async def main() -> None:
                          "-d", "mirix_locomo_clean_r1", "-At", "-F", "\t", "-c", q2],
                         capture_output=True, text=True,
                         env={**os.environ, "PGPASSWORD": "mirix"},
-                        cwd="/home/lj/MIRIX_eval").stdout
+                        cwd="$EVAL_DIR").stdout
     for line in o2.splitlines():
         pp = line.split("\t")
         if len(pp) >= 2:

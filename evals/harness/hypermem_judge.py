@@ -36,7 +36,7 @@ import os
 import re
 import sys
 
-sys.path.insert(0, "/home/lj/code/MIRIX/evals")
+sys.path.insert(0, "$REPO_DIR/evals")
 
 SYSTEM_PROMPT = """
     You are an expert grader that determines if answers to questions match a gold standard answer
@@ -112,7 +112,7 @@ async def main() -> None:
     load_dotenv()
     client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-    path = f"/home/lj/code/MIRIX/evals/results/locomo/{a.run}/metrics.json"
+    path = f"$REPO_DIR/evals/results/locomo/{a.run}/metrics.json"
     rows = [r for r in json.load(open(path))["llm_judge_results"]
             if str(r.get("category")) != "5"]
     if a.limit:

@@ -63,7 +63,7 @@ def store_text(db, user_id):
          f"WHERE NOT is_deleted AND user_id='{user_id}' "
          f"UNION ALL SELECT coalesce(name,'')||' '||coalesce(details,'') FROM semantic_memory "
          f"WHERE NOT is_deleted AND user_id='{user_id}') z;")
-    return subprocess.run(["/home/lj/MIRIX_eval/pgenv/bin/psql", "-w", "-h", "localhost",
+    return subprocess.run(["$EVAL_DIR/pgenv/bin/psql", "-w", "-h", "localhost",
                            "-U", "mirix", "-d", db, "-At", "-c", q],
                           capture_output=True, text=True,
                           env={**os.environ, "PGPASSWORD": "mirix"}).stdout.lower()
@@ -74,11 +74,11 @@ def main() -> None:
     ap.add_argument("--db", required=True)
     ap.add_argument("--prefix", required=True)
     ap.add_argument("--label", required=True)
-    ap.add_argument("--out", default="/home/lj/MIRIX_eval/window_recall.json")
+    ap.add_argument("--out", default="$EVAL_DIR/window_recall.json")
     a = ap.parse_args()
 
     lc = {x["sample_id"]: x for x in json.load(
-        open("/home/lj/code/MIRIX/evals/data/locomo10.json"))}
+        open("$REPO_DIR/evals/data/locomo10.json"))}
     results = {}
     for sid in CONVS:
         conv = lc[sid]["conversation"]

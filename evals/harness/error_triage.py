@@ -45,10 +45,10 @@ def main() -> None:
     ap.add_argument("--run", default="ab_graph_r1")
     ap.add_argument("--db", default="mirix_locomo_clean_r1")
     a = ap.parse_args()
-    D = f"/home/lj/code/MIRIX/evals/results/locomo/{a.run}"
+    D = f"$REPO_DIR/evals/results/locomo/{a.run}"
 
     lc = {x["sample_id"]: x for x in json.load(
-        open("/home/lj/code/MIRIX/evals/data/locomo10.json"))}
+        open("$REPO_DIR/evals/data/locomo10.json"))}
     src = {}
     for sid, x in lc.items():
         parts = []
@@ -69,7 +69,7 @@ def main() -> None:
                           "-d", a.db, "-At", "-F", "\t", "-c", q],
                          capture_output=True, text=True,
                          env={**os.environ, "PGPASSWORD": "mirix"},
-                         cwd="/home/lj/MIRIX_eval").stdout
+                         cwd="$EVAL_DIR").stdout
     for line in out.splitlines():
         p = line.split("\t")
         if len(p) >= 2:

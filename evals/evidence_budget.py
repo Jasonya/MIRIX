@@ -34,9 +34,9 @@ import os
 import re
 import sys
 
-sys.path.insert(0, "/home/lj/code/MIRIX/evals")
+sys.path.insert(0, "$REPO_DIR/evals")
 
-RESULTS = ("/home/lj/code/MIRIX/evals/results/locomo/"
+RESULTS = ("$REPO_DIR/evals/results/locomo/"
            "v724_full_qaonly_v723graph_r1/metrics.json")
 PREFIX = "v723full-r1__"
 STOP = set("the a an and or of to in on at for with from that this it is was were be "
@@ -63,10 +63,10 @@ def build(args):
     convs = sorted({r["sample_id"] for r in wrong + control})
     clients = {c: MirixMemorySystem(
         user_id=PREFIX + c,
-        mirix_config_path="/home/lj/code/MIRIX/evals/configs/0201c_v6.yaml")
+        mirix_config_path="$REPO_DIR/evals/configs/0201c_v6.yaml")
         for c in convs}
     agent = TaskAgent(
-        mirix_config_path="/home/lj/code/MIRIX/evals/configs/0201c_v6.yaml")
+        mirix_config_path="$REPO_DIR/evals/configs/0201c_v6.yaml")
     return clients, agent, wrong, control
 
 

@@ -33,9 +33,9 @@ import json
 import re
 import sys
 
-sys.path.insert(0, "/home/lj/code/MIRIX/evals")
+sys.path.insert(0, "$REPO_DIR/evals")
 
-RESULTS = ("/home/lj/code/MIRIX/evals/results/locomo/"
+RESULTS = ("$REPO_DIR/evals/results/locomo/"
            "v724_full_qaonly_v723graph_r1/metrics.json")
 PREFIX = "v723full-r1__"
 SUPPORT = 0.6

@@ -15,7 +15,7 @@ questions are currently answered correctly from ordinary retrieval, and if the o
 fifteen rows break them, that cost belongs in the total.
 """
 import collections, json, os, random, re, subprocess, sys
-sys.path.insert(0, "/home/lj/code/MIRIX/evals")
+sys.path.insert(0, "$REPO_DIR/evals")
 from concurrent.futures import ThreadPoolExecutor
 from openai import OpenAI
 from llm_judge import evaluate_llm_judge, assert_canonical_prompt
@@ -40,14 +40,14 @@ out = subprocess.run(["pgenv/bin/psql", "-w", "-h", "localhost", "-U", "mirix",
                       "-d", "mirix_locomo_clean_r1", "-At", "-F", "\t", "-c", q],
                      capture_output=True, text=True,
                      env={**os.environ, "PGPASSWORD": "mirix"},
-                     cwd="/home/lj/MIRIX_eval").stdout
+                     cwd="$EVAL_DIR").stdout
 rows = collections.defaultdict(list)
 for line in out.splitlines():
     p = line.split("\t")
     if len(p) >= 2 and p[1].strip():
         rows[p[0]].append(" ".join(p[1].split()))
 
-D = "/home/lj/code/MIRIX/evals/results/locomo/ab_graph_r1"
+D = "$REPO_DIR/evals/results/locomo/ab_graph_r1"
 J = [x for x in json.load(open(D + "/metrics.json"))["llm_judge_results"]
      if str(x.get("category")) != "5"]
 errs = [x for x in J if x.get("score") == 0]

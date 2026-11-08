@@ -33,7 +33,7 @@ import re
 import subprocess
 import sys
 
-RUN = "/home/lj/code/MIRIX/evals/results/locomo/ab_graph_r1"
+RUN = "$REPO_DIR/evals/results/locomo/ab_graph_r1"
 PREFIX = "clean-r1__"
 DB = "mirix_locomo_clean_r1"
 STOP = set("the a an and or of to in on at for with from that this it is was were be been "
@@ -86,7 +86,7 @@ def main() -> None:
     client = AsyncOpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
     lc = {x["sample_id"]: x for x in json.load(
-        open("/home/lj/code/MIRIX/evals/data/locomo10.json"))}
+        open("$REPO_DIR/evals/data/locomo10.json"))}
     turns, gold_ev = {}, {}
     for sid, x in lc.items():
         for k, v in x["conversation"].items():
@@ -109,7 +109,7 @@ def main() -> None:
                           "-d", DB, "-At", "-F", "\t", "-c", q],
                          capture_output=True, text=True,
                          env={**os.environ, "PGPASSWORD": "mirix"},
-                         cwd="/home/lj/MIRIX_eval").stdout
+                         cwd="$EVAL_DIR").stdout
     for line in out.splitlines():
         p = line.split("\t")
         if len(p) >= 2 and p[1].strip():
@@ -239,9 +239,9 @@ def main() -> None:
                 "gold": x["expected_answer"], "answer": x.get("predicted_answer"),
                 "category": C.get(str(x.get("category"))), "bucket": v}
                for x, v in zip(errs, verdicts)],
-              open("/home/lj/MIRIX_eval/final_triage.json", "w"),
+              open("$EVAL_DIR/final_triage.json", "w"),
               ensure_ascii=False, indent=1)
-    print("\nper-question verdicts -> /home/lj/MIRIX_eval/final_triage.json")
+    print("\nper-question verdicts -> $EVAL_DIR/final_triage.json")
 
 
 if __name__ == "__main__":

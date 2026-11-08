@@ -17,7 +17,7 @@ import math
 import sys
 from pathlib import Path
 
-EVALS = Path("/home/lj/code/MIRIX/evals/results")
+EVALS = Path("$REPO_DIR/evals/results")
 
 # LoCoMo categories are bare integers in the dataset.
 LOCOMO_CATS = {

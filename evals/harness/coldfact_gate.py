@@ -43,7 +43,7 @@ def main() -> None:
     from openai import OpenAI
     from dotenv import load_dotenv
     import numpy as np
-    load_dotenv("/home/lj/MIRIX_eval/.env")
+    load_dotenv("$EVAL_DIR/.env")
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
     idx = {}
@@ -56,10 +56,10 @@ def main() -> None:
     print(f"index: {sum(len(v[0]) for v in idx.values())} turns over {len(idx)} conversations",
           flush=True)
 
-    tri = json.load(open("/home/lj/MIRIX_eval/final_triage.json", encoding="utf-8"))
+    tri = json.load(open("$EVAL_DIR/final_triage.json", encoding="utf-8"))
     target = [x for x in tri if x["bucket"].split(" —")[0] in ("INGEST", "RETRIEVAL")]
     J = [x for x in json.load(open(
-        "/home/lj/code/MIRIX/evals/results/locomo/ab_graph_r1/metrics.json",
+        "$REPO_DIR/evals/results/locomo/ab_graph_r1/metrics.json",
         encoding="utf-8"))["llm_judge_results"]
         if str(x.get("category")) != "5" and x.get("score") == 1]
     random.seed(11)

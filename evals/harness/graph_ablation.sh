@@ -14,8 +14,8 @@
 # v7.23 is used for the graph arms because it outscores v7.24 on this store (1367 vs 1362,
 # multi-hop .883 vs .830) — the graph should be represented by its better retrieval version.
 set -u
-EVAL=/home/lj/MIRIX_eval; EVD=/home/lj/code/MIRIX/evals
-SC=/tmp/claude-1004/-home-lj-code/295438cf-9b9a-4ad5-b513-a0c3840ea4f8/scratchpad
+EVAL=$EVAL_DIR; EVD=$REPO_DIR/evals
+SC=$SCRATCH_DIR
 PY=$EVAL/.venv/bin/python; LOG=$SC/ablation.log
 DB=mirix_locomo_clean_r1
 say () { echo "[$(date '+%F %T')] $*" | tee -a "$LOG"; }

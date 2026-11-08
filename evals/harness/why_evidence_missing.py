@@ -35,7 +35,7 @@ def toks(t):
 
 def main() -> None:
     lc = {x["sample_id"]: x for x in json.load(
-        open("/home/lj/code/MIRIX/evals/data/locomo10.json"))}
+        open("$REPO_DIR/evals/data/locomo10.json"))}
     turn_text, turn_raw = {}, {}
     for sid, x in lc.items():
         for k, v in x["conversation"].items():
@@ -61,7 +61,7 @@ def main() -> None:
                           "-d", "mirix_locomo_clean_r1", "-At", "-F", "\t", "-c", q],
                          capture_output=True, text=True,
                          env={**os.environ, "PGPASSWORD": "mirix"},
-                         cwd="/home/lj/MIRIX_eval").stdout
+                         cwd="$EVAL_DIR").stdout
     for line in out.splitlines():
         p = line.split("\t")
         if len(p) >= 2:
@@ -69,7 +69,7 @@ def main() -> None:
             store_all[p[0]] = store_all.get(p[0], "") + " " + p[1].lower()
 
     J = [x for x in json.load(open(
-        f"/home/lj/code/MIRIX/evals/results/locomo/{RUN}/metrics.json"))["llm_judge_results"]
+        f"$REPO_DIR/evals/results/locomo/{RUN}/metrics.json"))["llm_judge_results"]
         if str(x.get("category")) == "1" and x.get("score") == 0]
 
     RARE = re.compile(r'"[^"]{3,40}"|\b[A-Z][a-z]{2,}\b|\b\d{2,4}\b')

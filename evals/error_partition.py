@@ -30,14 +30,14 @@ import json
 import re
 import sys
 
-sys.path.insert(0, "/home/lj/code/MIRIX/evals")
+sys.path.insert(0, "$REPO_DIR/evals")
 
 # Which run to analyse, and the user_id prefix its store was written under. Defaults
 # are the contaminated pre-36d8d40 run so old invocations keep reproducing; pass --run
 # and --prefix for the decontaminated ones.
 DEFAULT_RUN = "v724_full_qaonly_v723graph_r1"
 DEFAULT_PREFIX = "v723full-r1__"
-RESULTS = f"/home/lj/code/MIRIX/evals/results/locomo/{DEFAULT_RUN}/metrics.json"
+RESULTS = f"$REPO_DIR/evals/results/locomo/{DEFAULT_RUN}/metrics.json"
 PREFIX = DEFAULT_PREFIX
 SUPPORT = 0.6          # share of gold content tokens that must appear
 
@@ -65,7 +65,7 @@ def supported(gold: set, text) -> bool:
 def _apply_overrides(run, prefix):
     global RESULTS, PREFIX
     if run:
-        RESULTS = f"/home/lj/code/MIRIX/evals/results/locomo/{run}/metrics.json"
+        RESULTS = f"$REPO_DIR/evals/results/locomo/{run}/metrics.json"
     if prefix:
         PREFIX = prefix
 
@@ -77,7 +77,7 @@ def build():
     convs = sorted({r["sample_id"] for r in wrong})
     clients = {c: MirixMemorySystem(
         user_id=PREFIX + c,
-        mirix_config_path="/home/lj/code/MIRIX/evals/configs/0201c_v6.yaml")
+        mirix_config_path="$REPO_DIR/evals/configs/0201c_v6.yaml")
         for c in convs}
     return clients, wrong, convs
 

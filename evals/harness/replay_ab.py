@@ -35,9 +35,9 @@ import random
 import re
 import sys
 
-sys.path.insert(0, "/home/lj/code/MIRIX/evals")
+sys.path.insert(0, "$REPO_DIR/evals")
 
-RUN = "/home/lj/code/MIRIX/evals/results/locomo/clean_v724_qaonly"
+RUN = "$REPO_DIR/evals/results/locomo/clean_v724_qaonly"
 STOP = set("the a an and or of to in on at for with from that this it is was were be "
            "been have has had do does did his her their about they them".split())
 

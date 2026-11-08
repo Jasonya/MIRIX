@@ -25,9 +25,9 @@ import json
 import re
 import sys
 
-sys.path.insert(0, "/home/lj/code/MIRIX/evals")
+sys.path.insert(0, "$REPO_DIR/evals")
 
-RESULTS = ("/home/lj/code/MIRIX/evals/results/locomo/"
+RESULTS = ("$REPO_DIR/evals/results/locomo/"
            "v724_full_qaonly_v723graph_r1/metrics.json")
 PREFIX = "v723full-r1__"
 NOISE = 7          # +/- questions per arm, one run each
@@ -77,7 +77,7 @@ def build() -> tuple:
     convs = sorted({r["sample_id"] for r in temporal + counting})
     clients = {c: MirixMemorySystem(
         user_id=PREFIX + c,
-        mirix_config_path="/home/lj/code/MIRIX/evals/configs/0201c_v6.yaml")
+        mirix_config_path="$REPO_DIR/evals/configs/0201c_v6.yaml")
         for c in convs}
     print(f"temporal errors {len(temporal)}, counting errors {len(counting)}", flush=True)
     return clients, temporal, counting

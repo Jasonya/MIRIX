@@ -1,9 +1,10 @@
 # evals/harness — the scripts that produced the numbers in HANDOVER.md
 
-These lived only in `/home/lj/MIRIX_eval/` and were referenced by absolute path from the
+These lived only in the evaluation workspace and were referenced by absolute path from the
 handover, so a clone of this repository had a runbook pointing at files it did not contain.
-They are here now. Paths inside them still point at `/home/lj/MIRIX_eval` and
-`/home/lj/code/MIRIX` — fix those before running elsewhere.
+They are here now. Machine-specific paths are written as `$EVAL_DIR` (the evaluation
+workspace), `$REPO_DIR` (this repository) and `$SCRATCH_DIR` (a directory for logs); set
+them before running anything here.
 
 Roughly eighty more scripts remain in that directory. Most are one-off probes from a single
 afternoon and are not worth carrying; what is here is the subset that produced a result

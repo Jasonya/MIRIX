@@ -14,11 +14,11 @@
 # Roughly 4.5h ingest + ~1.5h QA per step. Everything is saved so the comparison can be
 # rerun without paying the ingest again.
 set -u
-EVAL=/home/lj/MIRIX_eval
-SC=/tmp/claude-1004/-home-lj-code/295438cf-9b9a-4ad5-b513-a0c3840ea4f8/scratchpad
+EVAL=$EVAL_DIR
+SC=$SCRATCH_DIR
 PY=$EVAL/.venv/bin/python
 PGB=$EVAL/pgenv/bin
-EVD=/home/lj/code/MIRIX/evals
+EVD=$REPO_DIR/evals
 DB=mirix_p3_nograph
 PREFIX=p3ng__
 LOG=$SC/p3nograph.log

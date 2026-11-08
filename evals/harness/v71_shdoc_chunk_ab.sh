@@ -10,9 +10,9 @@
 # Two arms, each with its own Postgres database AND its own graph namespace. Sharing either
 # is how a run in this project once scored 0.882 against 959 anchors it had not created.
 set -u
-EVAL=/home/lj/MIRIX_eval
+EVAL=$EVAL_DIR
 V71=/tmp/v71
-SC=/tmp/claude-1004/-home-lj-code/295438cf-9b9a-4ad5-b513-a0c3840ea4f8/scratchpad
+SC=$SCRATCH_DIR
 PY=$EVAL/.venv/bin/python
 PGB=$EVAL/pgenv/bin
 LOG=$SC/v71_chunk_ab.log
@@ -101,13 +101,13 @@ if os.path.exists(p):
     if J:
         c = sum(1 for x in J if x.get("score") == 1)
         acc = f"{c}/{len(J)} = {c/len(J):.4f}"
-rows = subprocess.run(["/home/lj/MIRIX_eval/pgenv/bin/psql", "-w", "-h", "localhost", "-U",
+rows = subprocess.run(["$EVAL_DIR/pgenv/bin/psql", "-w", "-h", "localhost", "-U",
                        "mirix", "-d", db, "-At", "-c",
                        f"SELECT count(*) FROM episodic_memory WHERE NOT is_deleted "
                        f"AND user_id LIKE '{prefix}%';"],
                       capture_output=True, text=True,
                       env={**os.environ, "PGPASSWORD": "mirix"}).stdout.strip()
-stray = subprocess.run(["/home/lj/MIRIX_eval/pgenv/bin/psql", "-w", "-h", "localhost", "-U",
+stray = subprocess.run(["$EVAL_DIR/pgenv/bin/psql", "-w", "-h", "localhost", "-U",
                         "mirix", "-d", db, "-At", "-c",
                         f"SELECT count(*) FROM episodic_memory WHERE NOT is_deleted "
                         f"AND user_id NOT LIKE '{prefix}%';"],

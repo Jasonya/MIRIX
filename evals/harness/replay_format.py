@@ -31,9 +31,9 @@ import random
 import re
 import sys
 
-sys.path.insert(0, "/home/lj/code/MIRIX/evals")
+sys.path.insert(0, "$REPO_DIR/evals")
 
-RUN = "/home/lj/code/MIRIX/evals/results/locomo/ab_graph_r1"
+RUN = "$REPO_DIR/evals/results/locomo/ab_graph_r1"
 STOP = set("the a an and or of to in on at for with from that this it is was were be "
            "been have has had do does did his her their about they them".split())
 

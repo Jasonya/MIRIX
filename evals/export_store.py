@@ -26,7 +26,7 @@ import os
 import subprocess
 import sys
 
-PG = "/home/lj/MIRIX_eval/pgenv/bin/psql"
+PG = "$EVAL_DIR/pgenv/bin/psql"
 TABLES = {
     "episodic_memory": ["id", "user_id", "organization_id", "actor", "event_type", "summary",
                         "details", "occurred_at", "filter_tags", "source_refs", "created_at"],

@@ -70,8 +70,8 @@ mean `APPEARS_IN`; purple edges mean `DESCRIBED_BY`.
 Regenerate with:
 
 ```bash
-set -a; source /Users/weichiehhuang/MIRIX_eval/.env; set +a
-/Users/weichiehhuang/MIRIX_eval/.venv/bin/python scripts/visualize_v6_graph.py \
+set -a; source $EVAL_DIR/.env; set +a
+$EVAL_DIR/.venv/bin/python scripts/visualize_v6_graph.py \
   --user-id longmem_s_0 \
   --out-dir docs/graph_memory_v6/visualizations
 ```

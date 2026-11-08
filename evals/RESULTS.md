@@ -29,14 +29,14 @@ Three cutoffs decide whether a stored result means anything.
 
 ## 1. Settings
 
-### 1.1 Environment (`/home/lj/MIRIX_eval/.env`)
+### 1.1 Environment (`$EVAL_DIR/.env`)
 
 The run scripts rewrite this file with `sed` before starting the server, so it is not stable
 between arms — read it from the script that produced a result, not from disk.
 
 ```bash
 MIRIX_PG_HOST=localhost           MIRIX_PG_PORT=5432        MIRIX_PG_USER=mirix
-MIRIX_PG_DB=<per arm>             MIRIX_PG_BIN=/home/lj/MIRIX_eval/pgenv/bin
+MIRIX_PG_DB=<per arm>             MIRIX_PG_BIN=$EVAL_DIR/pgenv/bin
 MIRIX_NEO4J_URI=bolt://localhost:7687
 MIRIX_NEO4J_USER=neo4j            MIRIX_NEO4J_DATABASE=neo4j
 MIRIX_NEO4J_VECTOR_DIM=1536

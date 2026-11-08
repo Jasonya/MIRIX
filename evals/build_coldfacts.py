@@ -19,7 +19,7 @@ from openai import OpenAI
 USER = sys.argv[1] if len(sys.argv) > 1 else "longmem_s_0"
 OUT = os.path.expanduser(f"~/MIRIX_eval/coldfacts_{USER}.json")
 
-sys.path.insert(0, "/home/lj/code/MIRIX/evals")
+sys.path.insert(0, "$REPO_DIR/evals")
 from longmem_eval import load_longmem_s  # noqa: E402
 
 client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])

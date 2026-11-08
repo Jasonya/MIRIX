@@ -18,15 +18,15 @@ one of those.
 ## 1. Environment
 
 ```
-repo      /home/lj/code/MIRIX            branch graph_revision
-evals     /home/lj/code/MIRIX/evals
-harness   /home/lj/MIRIX_eval            scripts, venv, .env, saved dumps
-python    /home/lj/MIRIX_eval/.venv/bin/python
-psql      /home/lj/MIRIX_eval/pgenv/bin/{psql,dropdb,createdb,pg_dump}
-scratch   /tmp/claude-*/scratchpad       logs
+repo      $REPO_DIR            branch graph_revision
+evals     $REPO_DIR/evals
+harness   $EVAL_DIR            scripts, venv, .env, saved dumps
+python    $EVAL_DIR/.venv/bin/python
+psql      $EVAL_DIR/pgenv/bin/{psql,dropdb,createdb,pg_dump}
+scratch   $SCRATCH_DIR       logs
 ```
 
-`/home/lj/MIRIX_eval/.env` is the single source of runtime config. The run scripts **rewrite
+`$EVAL_DIR/.env` is the single source of runtime config. The run scripts **rewrite
 it with `sed`** before starting the server, so do not hand-edit it while a run is in flight.
 Keys that matter:
 
@@ -76,7 +76,7 @@ unless the arm is about them — they persist in the shell and silently change r
 ### Starting the server
 
 ```bash
-cd /home/lj/MIRIX_eval && ./run_server.sh          # port 8531, reads .env
+cd $EVAL_DIR && ./run_server.sh          # port 8531, reads .env
 ```
 
 **Do not hand-roll `uvicorn mirix.server.server:app`.** It fails with "Attribute app not
@@ -89,7 +89,7 @@ question with no memory and still exit 0. That happened; see §2.4.
 
 ### 2.1 Full ingest + QA (the standard arm)
 
-`/home/lj/MIRIX_eval/locomo_clean.sh` is the reference. Copy it for a new arm and change
+`$EVAL_DIR/locomo_clean.sh` is the reference. Copy it for a new arm and change
 `DB`, `PREFIX`, `BK`, the log name and the output paths. It does, in order:
 
 1. drop and recreate the Postgres DB, `CREATE EXTENSION vector`
@@ -103,8 +103,8 @@ Cost: **~5.5h ingest + ~1h QA** for 10 conversations. The graph roughly quintupl
 (12.8 → 61.6 s/chunk).
 
 ```bash
-cd /home/lj/MIRIX_eval && nohup timeout 43200 ./locomo_clean.sh > /dev/null 2>&1 &
-tail -f /tmp/claude-*/scratchpad/locomo_clean.log
+cd $EVAL_DIR && nohup timeout 43200 ./locomo_clean.sh > /dev/null 2>&1 &
+tail -f $SCRATCH_DIR/locomo_clean.log
 ```
 
 Smaller datasets for iteration: `data/locomo_pilot3.json` (3 conversations, 411 questions),
@@ -115,7 +115,7 @@ Smaller datasets for iteration: `data/locomo_pilot3.json` (3 conversations, 411 
 Any change that does not alter what is *written* can be tested without re-ingesting, which
 removes the larger of the two noise sources and costs ~1h instead of 6.5h.
 
-`/home/lj/MIRIX_eval/graph_ablation.sh` is the template — **copy this for new retrieval or
+`$EVAL_DIR/graph_ablation.sh` is the template — **copy this for new retrieval or
 answering arms.** The mechanism is: seed the output directory from a completed run, keeping
 its chunk markers and clearing its answers, so `main_eval.py` skips ingestion.
 
@@ -134,7 +134,7 @@ Then the same `main_eval.py --run-llm` line as above. It will see the markers an
 ### 2.3 Judging
 
 ```bash
-cd /home/lj/code/MIRIX/evals
+cd $REPO_DIR/evals
 python organize_results.py --judge default results/locomo/<name>
 ```
 
@@ -173,7 +173,7 @@ Measured on our side: single-call grading leaves **~25 questions of judge noise 
 (1.6%). Cost of removing it is roughly **$1 per full run** — negligible against 5.5h of
 ingest, and smaller than most of the effects we have been trying to detect.
 
-`/home/lj/MIRIX_eval/hypermem_judge.py` implements their protocol exactly — same prompt,
+`$EVAL_DIR/hypermem_judge.py` implements their protocol exactly — same prompt,
 same model, same temperature, same 3-vote majority, same lenient label parsing — and
 re-scores any stored run without re-answering anything:
 
@@ -196,7 +196,7 @@ apostrophes where the others used ASCII — worth 3 questions.
 ### 2.4 Assertions — run before every arm
 
 ```bash
-cd /home/lj/code/MIRIX/evals
+cd $REPO_DIR/evals
 python assert_store_sane.py --db mirix_locomo_clean_r1 --prefix clean-r1__ --graph
 ```
 
@@ -264,7 +264,7 @@ rows, once with `MIRIX_ENABLE_GRAPH_MEMORY=true` and once with `false`. The no-g
 falls back to flat Postgres search over the same content. Nothing is re-ingested, so ingest
 drift is removed entirely and what remains is the retrieval path.
 
-`/home/lj/MIRIX_eval/graph_ablation.sh` does exactly this — copy it. Its shape:
+`$EVAL_DIR/graph_ablation.sh` does exactly this — copy it. Its shape:
 
 ```bash
 DB=mirix_locomo_clean_r1                       # ONE store, never rebuilt
@@ -348,7 +348,7 @@ writes the same per-sample schema, so `organize_results.py` works on all of them
 
 Note tracks 2 and 3 go through **`longmem_eval.py --source`**, not `ruler_eval.py`. Both can
 load RULER rows, but `longmem_eval.py` is what the existing `shdoc_*` / `mhdoc_*` results
-were produced with (`/home/lj/MIRIX_eval/run_v81_docqa.sh:42`), so use it or the numbers are
+were produced with (`$EVAL_DIR/run_v81_docqa.sh:42`), so use it or the numbers are
 not comparable to what is already on disk.
 
 `mab/ruler_eval.py` and the `infbench_sum_eng_shots2` source of `lru_eval.py` exist and work,
@@ -357,8 +357,8 @@ but are **not** in this four-track set.
 ### Commands
 
 ```bash
-cd /home/lj/code/MIRIX/evals
-PY=/home/lj/MIRIX_eval/.venv/bin/python
+cd $REPO_DIR/evals
+PY=$EVAL_DIR/.venv/bin/python
 
 # 1 — LongMemEval-S (wrapper also snapshots the store afterwards)
 LIMIT=5 MAX_QS=60 ./mab/run_mab_longmem_eval.sh          # fast arm, 60 QA
@@ -531,13 +531,13 @@ cross-episode join is precomputed at write time.** No read-side policy reconstru
 matches our graph being worth only +11.5 on multi-hop against their 93.62.
 
 Validate it **without QA first**: three conversations, two arms, a deterministic store metric
-(does a fact linking two sessions exist at all?). `/home/lj/MIRIX_eval/window_recall.py` is a
+(does a fact linking two sessions exist at all?). `$EVAL_DIR/window_recall.py` is a
 worked example of a judge-free store metric. Only pay for a full re-ingest if that clears.
 
 ## 7. File map
 
 ```
-/home/lj/MIRIX_eval/
+$EVAL_DIR/
   (all of these are now also in evals/harness/ — see its README)
   locomo_clean.sh          full LoCoMo ingest + QA — copy for a new ingest arm
   graph_ablation.sh        4-arm QA-only template — copy for a new retrieval/answer arm
@@ -548,7 +548,7 @@ worked example of a judge-free store metric. Only pay for a full re-ingest if th
   coldfact_gate.py         the offline gate that killed the cold-fact lane
   HANDOVER.md              this file
 
-/home/lj/code/MIRIX/evals/
+$REPO_DIR/evals/
   main_eval.py             ingest + QA driver; MIRIX_WINDOW_TURNS lives in iter_sessions
   assert_store_sane.py     pre-flight — run before every arm
   llm_judge.py             canonical judge prompt, sha256-pinned

@@ -43,9 +43,9 @@ import os
 import re
 import sys
 
-sys.path.insert(0, "/home/lj/code/MIRIX/evals")
+sys.path.insert(0, "$REPO_DIR/evals")
 
-DATA = "/home/lj/code/MIRIX/evals/data/locomo10.json"
+DATA = "$REPO_DIR/evals/data/locomo10.json"
 DIA = re.compile(r"D(\d+):(\d+)")
 _STOP = set("the a an and or of to in on at for with from that this it is was were be "
             "been have has had do does did what when where who how why which their her "
@@ -78,7 +78,7 @@ def build(args):
     from mirix_memory_system import MirixMemorySystem
     return MirixMemorySystem(
         user_id=args.user,
-        mirix_config_path="/home/lj/code/MIRIX/evals/configs/0201c_v6.yaml")
+        mirix_config_path="$REPO_DIR/evals/configs/0201c_v6.yaml")
 
 
 def parse_args():

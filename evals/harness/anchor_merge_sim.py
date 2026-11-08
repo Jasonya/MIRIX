@@ -64,7 +64,7 @@ def hard(t):
 def main() -> None:
     from dotenv import load_dotenv
     from neo4j import GraphDatabase
-    load_dotenv("/home/lj/MIRIX_eval/.env")
+    load_dotenv("$EVAL_DIR/.env")
     d = GraphDatabase.driver(os.environ["MIRIX_NEO4J_URI"],
                              auth=(os.environ["MIRIX_NEO4J_USER"],
                                    os.environ["MIRIX_NEO4J_PASSWORD"]))

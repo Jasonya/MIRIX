@@ -48,17 +48,17 @@ def hard(t):
 def main() -> None:
     from dotenv import load_dotenv
     from neo4j import GraphDatabase
-    load_dotenv("/home/lj/MIRIX_eval/.env")
+    load_dotenv("$EVAL_DIR/.env")
 
     lc = {x["sample_id"]: x for x in json.load(
-        open("/home/lj/code/MIRIX/evals/data/locomo10.json"))}
+        open("$REPO_DIR/evals/data/locomo10.json"))}
     gold_ev = {}
     for sid, x in lc.items():
         for q in x.get("qa", []):
             gold_ev[(sid, q["question"])] = q.get("evidence") or []
 
     J = [x for x in json.load(open(
-        f"/home/lj/code/MIRIX/evals/results/locomo/{RUN}/metrics.json"))["llm_judge_results"]
+        f"$REPO_DIR/evals/results/locomo/{RUN}/metrics.json"))["llm_judge_results"]
         if str(x.get("category")) == "1" and x.get("score") == 0]
     print(f"{RUN}: {len(J)} multi-hop errors", flush=True)
 
@@ -96,7 +96,7 @@ def main() -> None:
                           "-d", "mirix_locomo_clean_r1", "-At", "-F", "\t", "-c", q],
                          capture_output=True, text=True,
                          env={**os.environ, "PGPASSWORD": "mirix"},
-                         cwd="/home/lj/MIRIX_eval").stdout
+                         cwd="$EVAL_DIR").stdout
     for line in out.splitlines():
         parts = line.split("\t")
         if len(parts) >= 3:
