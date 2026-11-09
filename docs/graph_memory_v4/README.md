@@ -73,14 +73,17 @@ See [v4_graph_memory.md](v4_graph_memory.md) for per-file source and diffs
 
 ## Configuration
 
-When you want to use graph memory:
+When you want to use graph memory, provision your own Neo4j database and set its
+password in your local `.env` file. Replace the placeholder below with your own
+password; do not commit the completed file. Obtain any model-provider API keys
+from your own provider account.
 
 ```bash
 # .env
 MIRIX_ENABLE_GRAPH_MEMORY=true
 MIRIX_NEO4J_URI=bolt://neo4j:7687
 MIRIX_NEO4J_USER=neo4j
-MIRIX_NEO4J_PASSWORD=mirix_neo4j_dev
+MIRIX_NEO4J_PASSWORD=<your-neo4j-password>
 ```
 
 Then start the stack with the `graph` profile so Neo4j comes up:

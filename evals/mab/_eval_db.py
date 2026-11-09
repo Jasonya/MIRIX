@@ -98,8 +98,10 @@ def measure_memory_size(sample_id: str) -> Dict:
     stats["flat_total_chars"] = flat_chars
 
     try:
-        from neo4j import GraphDatabase
         from mirix.settings import settings
+        if not settings.neo4j_password or not settings.neo4j_password.strip():
+            raise ValueError("Set MIRIX_NEO4J_PASSWORD to measure Neo4j graph memory")
+        from neo4j import GraphDatabase
         driver = GraphDatabase.driver(
             settings.neo4j_uri, auth=(settings.neo4j_user, settings.neo4j_password)
         )

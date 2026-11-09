@@ -1,3 +1,8 @@
+> Credential note: This document preserves historical source and diffs with the
+> published development password removed. Configure your own Neo4j database
+> credentials via `MIRIX_NEO4J_PASSWORD`, and obtain provider API keys from your
+> own accounts. Use the current source for credential validation and deployment.
+
 # v4 Graph Memory — Code Changes
 
 Per-file changelog of the dual-graph LightRAG patch. Companion to [README.md](README.md) (overall design) and [v4_graph_memory.patch](v4_graph_memory.patch) (machine-applicable form).
@@ -3492,7 +3497,7 @@ index 2a87d123..44667d0d 100644
 +      - "7474:7474"
 +      - "7687:7687"
 +    environment:
-+      - NEO4J_AUTH=${MIRIX_NEO4J_USER:-neo4j}/${MIRIX_NEO4J_PASSWORD:-mirix_neo4j_dev}
++      - NEO4J_AUTH=${MIRIX_NEO4J_USER:-neo4j}/${MIRIX_NEO4J_PASSWORD}
 +      - NEO4J_PLUGINS=["apoc"]
 +      - NEO4J_dbms_memory_heap_max__size=2G
 +      - NEO4J_dbms_memory_pagecache_size=1G
@@ -3535,7 +3540,7 @@ index 2a87d123..44667d0d 100644
 +      - MIRIX_ENABLE_GRAPH_MEMORY=${MIRIX_ENABLE_GRAPH_MEMORY:-false}
 +      - MIRIX_NEO4J_URI=bolt://neo4j:7687
 +      - MIRIX_NEO4J_USER=${MIRIX_NEO4J_USER:-neo4j}
-+      - MIRIX_NEO4J_PASSWORD=${MIRIX_NEO4J_PASSWORD:-mirix_neo4j_dev}
++      - MIRIX_NEO4J_PASSWORD=${MIRIX_NEO4J_PASSWORD}
        # - MIRIX_REDIS_PASSWORD=           # Set if Redis requires auth
        # - MIRIX_REDIS_DB=0                # Redis database number
        # Alternative: Full Redis URI (overrides individual settings)
@@ -4478,7 +4483,7 @@ index 5d513c19..dbd18fc3 100755
      enable_graph_memory: bool = Field(False, env="MIRIX_ENABLE_GRAPH_MEMORY")
 +    neo4j_uri: str = Field("bolt://localhost:7687", env="MIRIX_NEO4J_URI")
 +    neo4j_user: str = Field("neo4j", env="MIRIX_NEO4J_USER")
-+    neo4j_password: str = Field("mirix_neo4j_dev", env="MIRIX_NEO4J_PASSWORD")
++    neo4j_password: str = Field("", env="MIRIX_NEO4J_PASSWORD")
 +    neo4j_database: str = Field("neo4j", env="MIRIX_NEO4J_DATABASE")
 +    # Dimension of embeddings used for entity/relation vector indexes in Neo4j.
 +    # Must match the embedding model in use (1536 for text-embedding-3-small,

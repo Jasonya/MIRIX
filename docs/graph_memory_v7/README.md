@@ -162,7 +162,9 @@ Matched anchors: ...
 
 ## Run Command
 
-Example server env:
+Example server env (replace the password placeholder with the password for your
+own Neo4j database; do not commit it). Obtain any model-provider API keys from
+your own provider account:
 
 ```bash
 export MIRIX_ENABLE_GRAPH_MEMORY=true
@@ -170,7 +172,7 @@ export MIRIX_GRAPH_VERSION=v7
 export MIRIX_PG_DB=mirix_v7_longmems
 export MIRIX_NEO4J_URI=bolt://localhost:7687
 export MIRIX_NEO4J_USER=neo4j
-export MIRIX_NEO4J_PASSWORD=mirix_neo4j_dev
+export MIRIX_NEO4J_PASSWORD="<your-neo4j-password>"
 ```
 
 Use a clean PG DB and clean Neo4j label set when benchmarking so v7 counts are

@@ -78,7 +78,9 @@ def wrap(value: str, width: int = 34, max_chars: int = 150) -> str:
 def graph_driver():
     uri = os.environ.get("MIRIX_NEO4J_URI", "bolt://localhost:7687")
     user = os.environ.get("MIRIX_NEO4J_USER", "neo4j")
-    password = os.environ.get("MIRIX_NEO4J_PASSWORD", "mirix_neo4j_dev")
+    password = os.environ.get("MIRIX_NEO4J_PASSWORD")
+    if not password or not password.strip():
+        raise ValueError("Set MIRIX_NEO4J_PASSWORD to your Neo4j database password before connecting.")
     return GraphDatabase.driver(uri, auth=(user, password))
 
 

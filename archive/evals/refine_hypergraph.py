@@ -11,15 +11,23 @@ Four passes (dry-run by default; pass --apply to write):
   4. PRUNE       delete anchors no fact touches AND that link <=1 memory (dead
                  weight: they can neither answer nor bridge)
 """
+import argparse
+import os
 import re
-import sys
 from collections import defaultdict
 
 from neo4j import GraphDatabase
 
-APPLY = "--apply" in sys.argv
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--apply", action="store_true", help="Apply changes (default: dry run).")
+APPLY = parser.parse_args().apply
 U = "longmem_s_0"
-d = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "mirix_neo4j_dev"))
+uri = os.environ.get("MIRIX_NEO4J_URI", "bolt://localhost:7687")
+user = os.environ.get("MIRIX_NEO4J_USER", "neo4j")
+password = os.environ.get("MIRIX_NEO4J_PASSWORD")
+if not password or not password.strip():
+    raise ValueError("Set MIRIX_NEO4J_PASSWORD to your Neo4j database password before connecting.")
+d = GraphDatabase.driver(uri, auth=(user, password))
 
 AUX = re.compile(r"^(is|are|was|were|be|been|being)\s+", re.I)
 

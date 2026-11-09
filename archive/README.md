@@ -45,6 +45,21 @@ superseded by ingest-time prevention + maintenance passes),
 then restored — the MAB runner scripts call it for post-run snapshots; the
 "unreferenced" scan had only covered *.py, not *.sh.)
 
+## Credentials for archived scripts
+
+Before running the Neo4j visualization or refinement scripts, provision your own
+Neo4j database and set `MIRIX_NEO4J_PASSWORD` to that database's password in your
+local environment. The scripts also accept `MIRIX_NEO4J_URI` and
+`MIRIX_NEO4J_USER` (defaults: `bolt://localhost:7687` and `neo4j`). No shared
+database password is supplied. The scripts read exported environment variables;
+they do not automatically load a `.env` file.
+
+If an experiment uses an external model provider, create your own provider
+account and obtain your own API key. Keep credentials in your local environment
+or a secret manager, and do not commit them to Git. If a deployment reused a
+password previously published in this archive, change the password on that
+database and update the local configuration.
+
 ## rejected/
 
 `semantic_consolidator.py` — the auto_dream "v2" flat-store stage. It clustered

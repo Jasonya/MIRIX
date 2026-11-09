@@ -2,6 +2,7 @@
 hyperedges linking a SUBJECT anchor + OBJECT anchor + the source MEMORY, stamped
 with role. Shows the distinctive shape — facts are first-class nodes, not edges.
 """
+import argparse
 import os
 import textwrap
 import matplotlib
@@ -11,8 +12,15 @@ import matplotlib.patches as mpatches
 import networkx as nx
 from neo4j import GraphDatabase
 
+argparse.ArgumentParser(description=__doc__).parse_args()
+
 U = "longmem_s_0"
-d = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "mirix_neo4j_dev"))
+uri = os.environ.get("MIRIX_NEO4J_URI", "bolt://localhost:7687")
+user = os.environ.get("MIRIX_NEO4J_USER", "neo4j")
+password = os.environ.get("MIRIX_NEO4J_PASSWORD")
+if not password or not password.strip():
+    raise ValueError("Set MIRIX_NEO4J_PASSWORD to your Neo4j database password before connecting.")
+d = GraphDatabase.driver(uri, auth=(user, password))
 
 # Two thematically-clean memories (a travel/flight cluster) so the picture reads.
 SEED_MEMS = ["ep_DU49", "ep_EJ78"]

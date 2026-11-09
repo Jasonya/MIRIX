@@ -18,6 +18,26 @@ Your personal AI that builds memory through screen observation and natural conve
 - **Multi-Modal Input:** Text, images, voice, and screen captures processed seamlessly
 
 ### Quick Start
+Obtain your own LLM and embedding API keys from the providers you choose. MIRIX does
+not include shared provider keys or hosted database credentials. Copy
+`docker/env.example` to a local `.env` file if needed and fill in your own values;
+keep `.env` out of version control. The `MIRIX_API_KEY` created in the dashboard below
+authenticates to your MIRIX server and is separate from these provider keys.
+
+For the optional Neo4j graph backend, set your own `MIRIX_NEO4J_PASSWORD` before
+starting `docker compose --profile graph up -d` and enabling
+`MIRIX_ENABLE_GRAPH_MEMORY=true`. Generate a password for a new local database with
+`openssl rand -hex 32`, or obtain credentials for your hosted database from its
+provider. No shared Neo4j password is included; its published ports are restricted
+to `127.0.0.1`. Export `MIRIX_NEO4J_URI`, `MIRIX_NEO4J_USER` and
+`MIRIX_NEO4J_PASSWORD` before running archived evaluation tools directly.
+See [archive/README.md](archive/README.md#credentials-for-archived-scripts).
+
+If an existing database used a previously published development password, change
+it in Neo4j and update your local configuration. Changing `.env` or `NEO4J_AUTH`
+alone does not change an existing database's password; see
+[Neo4j's authentication documentation](https://neo4j.com/docs/operations-manual/current/docker/introduction/#docker-auth).
+
 **Step 1: Backend & Dashboard (Docker):**
 ```
 docker compose up -d --pull always
