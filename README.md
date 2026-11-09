@@ -19,6 +19,12 @@ Your personal AI that builds memory through screen observation and natural conve
 - **Multi-Modal Input:** Text, images, voice, and screen captures processed seamlessly
 
 ### Quick Start
+Obtain your own LLM and embedding API keys from the providers you choose. MIRIX does
+not include shared provider keys or hosted database credentials. Copy
+`docker/env.example` to a local `.env` file if needed and fill in your own values;
+keep `.env` out of version control. The `MIRIX_API_KEY` created in the dashboard below
+authenticates to your MIRIX server and is separate from these provider keys.
+
 **Step 1: Backend & Dashboard (Docker):**
 ```
 docker compose up -d --pull always
@@ -163,9 +169,26 @@ MIRIX can index episodic and semantic memories into a provenance hypergraph stor
 
 Graph memory is off by default. To turn it on:
 
-1. Start Neo4j 5.23 or later. `docker compose --profile graph up -d` starts Neo4j 5.26 with APOC.
-2. Install the Neo4j driver. It is in `requirements.txt`; after `pip install -e .`, run `pip install "neo4j>=5.20,<6"`.
-3. Set `MIRIX_ENABLE_GRAPH_MEMORY=true` and the connection settings `MIRIX_NEO4J_URI`, `MIRIX_NEO4J_USER` and `MIRIX_NEO4J_PASSWORD` (defaults: `bolt://localhost:7687`, `neo4j`, `mirix_neo4j_dev`).
+1. Set your own `MIRIX_NEO4J_PASSWORD` in your local `.env` or environment before
+   starting Neo4j. There is no default password. For a new local database, generate
+   a password with `openssl rand -hex 32` and save it locally. For an existing or
+   hosted database, obtain the credentials from its administrator or provider.
+2. Start Neo4j 5.23 or later. `docker compose --profile graph up -d` starts Neo4j
+   5.26 with APOC using that password. Its published ports are restricted to
+   `127.0.0.1`; remote access requires an explicit deployment configuration.
+3. Install the Neo4j driver. It is in `requirements.txt`; after `pip install -e .`,
+   run `pip install "neo4j>=5.20,<6"`.
+4. Set `MIRIX_ENABLE_GRAPH_MEMORY=true` and the connection settings
+   `MIRIX_NEO4J_URI`, `MIRIX_NEO4J_USER` and `MIRIX_NEO4J_PASSWORD`. The URI and user
+   default to `bolt://localhost:7687` and `neo4j`; the password must match your
+   database. When using Docker Compose, set these values before starting the
+   services (Compose uses `bolt://neo4j:7687` inside its network).
+
+If an existing database used the previous shared development password, change the
+password in Neo4j and update your local configuration. Changing `.env` or
+`NEO4J_AUTH` alone does not change the password of an existing database. See
+[Neo4j's authentication documentation](https://neo4j.com/docs/operations-manual/current/docker/introduction/#docker-auth).
+Graph memory can remain disabled without any Neo4j credentials.
 
 With graph memory on, `POST /memory/auto_dream` refines the graph only unless the request sets `graph_only` to `false`. Evaluation settings and commands are in [evals/GRAPH_MEMORY.md](evals/GRAPH_MEMORY.md).
 

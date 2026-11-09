@@ -126,6 +126,13 @@ async def init_neo4j_client() -> Optional[AsyncDriver]:
     if _neo4j_driver is not None:
         return _neo4j_driver
 
+    if not settings.neo4j_password or not settings.neo4j_password.strip():
+        logger.error(
+            "MIRIX_NEO4J_PASSWORD must be set to your Neo4j instance's password "
+            "when graph memory is enabled — graph memory will be unavailable"
+        )
+        return None
+
     try:
         driver = AsyncGraphDatabase.driver(
             settings.neo4j_uri,

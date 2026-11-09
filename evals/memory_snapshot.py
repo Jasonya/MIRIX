@@ -20,8 +20,9 @@ Notes
 -----
 * `load` REPLACES current memory: it truncates the same tables / wipes the
   Neo4j graph before restoring, so the snapshot is the exact state afterwards.
-* PG connection + Neo4j auth are read from the same env / settings the server
-  uses (.env in repo root). Defaults match docker/env.example.
+* PG connection + Neo4j auth are read from exported environment variables;
+  this script does not load .env. Neo4j requires your own MIRIX_NEO4J_PASSWORD.
+  Without it, graph export is skipped only when graph memory is disabled.
 * A snapshot is mode-specific: a no-graph snapshot has an empty graph, a graph
   snapshot has both. Restoring a no-graph snapshot then running graph-mode QA
   will NOT magically produce a graph.
@@ -60,7 +61,7 @@ MEMORY_TABLES = [
 ]
 AGENT_TABLES = ["agents", "messages"]
 
-# --- PG / Neo4j connection (env first, then docker/env.example defaults) ---
+# --- PG / Neo4j connection (Neo4j credentials must be supplied by the user) ---
 PG = {
     "host": os.environ.get("MIRIX_PG_HOST", "localhost"),
     "port": os.environ.get("MIRIX_PG_PORT", "5432"),
@@ -72,9 +73,20 @@ PG_BIN = os.environ.get("MIRIX_PG_BIN", "/usr/local/opt/postgresql@17/bin")
 NEO4J = {
     "uri": os.environ.get("MIRIX_NEO4J_URI", "bolt://localhost:7687"),
     "user": os.environ.get("MIRIX_NEO4J_USER", "neo4j"),
-    "password": os.environ.get("MIRIX_NEO4J_PASSWORD", "mirix_neo4j_dev"),
+    "password": os.environ.get("MIRIX_NEO4J_PASSWORD"),
     "database": os.environ.get("MIRIX_NEO4J_DATABASE", "neo4j"),
 }
+
+
+def _require_neo4j_password() -> str:
+    password = NEO4J["password"]
+    if not password or not password.strip():
+        raise ValueError("Set MIRIX_NEO4J_PASSWORD to your Neo4j instance's password")
+    return password
+
+
+def _graph_enabled() -> bool:
+    return os.environ.get("MIRIX_ENABLE_GRAPH_MEMORY", "false").lower() in {"1", "true", "yes", "on"}
 
 
 def _pg_env():
@@ -98,6 +110,8 @@ def _table_exists(table: str) -> bool:
 
 # ---------------------------------------------------------------- save ----
 def save(name: str, include_agents: bool) -> None:
+    if _graph_enabled():
+        _require_neo4j_password()
     snap = SNAP_ROOT / name
     snap.mkdir(parents=True, exist_ok=True)
 
@@ -139,6 +153,11 @@ def save(name: str, include_agents: bool) -> None:
 
 
 def _neo4j_export() -> dict:
+    if not NEO4J["password"] or not NEO4J["password"].strip():
+        if _graph_enabled():
+            _require_neo4j_password()
+        print("[snapshot] MIRIX_NEO4J_PASSWORD not set; graph export skipped (graph memory disabled)")
+        return {"nodes": [], "relationships": []}
     try:
         from neo4j import GraphDatabase
     except ImportError:
@@ -172,6 +191,10 @@ def load(name: str) -> None:
         raise SystemExit(f"Snapshot '{name}' not found at {snap}")
     meta = json.loads((snap / "meta.json").read_text())
     tables = meta["pg_tables"]
+    graph = json.loads((snap / "neo4j_graph.json").read_text())
+    # Check graph credentials before replacing any PostgreSQL data.
+    if graph["nodes"]:
+        _require_neo4j_password()
 
     # --- PostgreSQL: truncate the snapshot's tables, then pg_restore data ---
     print(f"[snapshot] truncating {len(tables)} table(s) before restore")
@@ -190,13 +213,14 @@ def load(name: str) -> None:
         print(f"[snapshot] pg_restore warnings:\n{res.stderr.strip()[:500]}")
 
     # --- Neo4j: wipe graph, recreate nodes + relationships ---
-    _neo4j_import(json.loads((snap / "neo4j_graph.json").read_text()))
+    _neo4j_import(graph)
     print(f"[snapshot] loaded '{name}'")
 
 
 def _neo4j_import(graph: dict) -> None:
     if not graph["nodes"]:
         return
+    _require_neo4j_password()
     try:
         from neo4j import GraphDatabase
     except ImportError:

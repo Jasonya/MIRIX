@@ -8,7 +8,13 @@ addition to them.
 
 - PostgreSQL with `pgvector`, as for flat MIRIX.
 - Neo4j 5.23 or later. The graph queries use `CALL (a, row) { ... }`, which older servers
-  reject. `docker compose --profile graph up -d` starts Neo4j 5.26 with APOC.
+  reject. Set your own `MIRIX_NEO4J_PASSWORD` before running
+  `docker compose --profile graph up -d`, which starts Neo4j 5.26 with APOC.
+  For a new local database, generate a password with `openssl rand -hex 32` and
+  store it in your local `.env` or environment. For a hosted database, obtain your
+  own credentials from its provider. No shared database password is included.
+- Your own LLM and embedding API keys, obtained from the relevant providers and
+  configured locally. Never commit credentials or `.env` files.
 - The Python `neo4j` driver. It is in `requirements.txt`; after `pip install -e .` also run
   `pip install "neo4j>=5.20,<6"`.
 - A database created before graph memory existed needs
@@ -25,7 +31,7 @@ with `false` (the default) it behaves as the original flat MIRIX.
 |---|---|
 | `MIRIX_ENABLE_GRAPH_MEMORY` | `true` turns the hypergraph on; `false` keeps flat Postgres memory |
 | `MIRIX_GRAPH_RERANK` | `1` (default) reranks graph candidates; `0` turns reranking off for ablations |
-| `MIRIX_NEO4J_URI`, `MIRIX_NEO4J_USER`, `MIRIX_NEO4J_PASSWORD` | Neo4j connection (default `bolt://localhost:7687`) |
+| `MIRIX_NEO4J_URI`, `MIRIX_NEO4J_USER`, `MIRIX_NEO4J_PASSWORD` | Neo4j connection (URI defaults to `bolt://localhost:7687`, user to `neo4j`; password required for graph operations, with no default) |
 | `MIRIX_NEO4J_VECTOR_DIM` | dimension of the anchor-name index, 1536 by default; it must match the embedding model |
 
 Start the server from the repository root with these variables set:
@@ -35,6 +41,12 @@ python scripts/start_server.py --port 8531
 ```
 
 The evaluation clients connect to `http://127.0.0.1:8531`.
+
+Evaluation tools launched directly from the shell, including `memory_snapshot.py`,
+read the `MIRIX_NEO4J_*` environment variables; export the same connection settings
+used by the server before running them. To stop using a previously shared password
+on an existing database, change it in Neo4j first and update the environment to
+match; changing `NEO4J_AUTH` alone does not rotate an existing database password.
 
 ## The three configurations
 
